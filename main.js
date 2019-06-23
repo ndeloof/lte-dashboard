@@ -11,7 +11,21 @@ const parser = require('fast-xml-parser');
 let mainWindow
 
 let cookie
-let token
+
+const password = process.env.PASSWORD;
+
+const http = axios.create({
+  baseURL: 'http://192.168.1.1/api/',
+  timeout: 10000,
+  transformRequest: [function (data, headers) {
+    headers.Accept = "application/xml";
+    if (cookie) {
+      headers.Cookie = cookie;
+    }
+    return data;
+  }],
+});
+
 
 // Create a new BrowserWindow when `app` is ready
 function createWindow () {
@@ -27,20 +41,37 @@ function createWindow () {
   // Open DevTools - Remove for PRODUCTION!
   mainWindow.webContents.openDevTools();
 
-  axios.get('http://192.168.1.1/api/webserver/SesTokInfo')
+  http.get('webserver/SesTokInfo')
     .then(function (response) {
       const xml = response.data;
       var data = parser.parse(xml)
-      cookie = data.response.SesInfo;
-      token = data.response.TokInfo;
-      console.log("cookie = " + cookie);
-      console.log("token = " + token);
+      session = data.response.SesInfo;
+      const token = data.response.TokInfo;
+      cookie = 'SessionId='+session
 
-      axios.post('http://192.168.1.1/api/user/login')
+      const hash = Base64.encode(sha256("admin"+Base64.encode(sha256(password))+token));
+      const request = {
+        "request": {
+          "Username":"admin",
+          "Password": hash,
+          "password_type": 4
+        }
+      };
+      const login = new parser.j2xParser({}).parse(request)
+      http({method:'post',
+            url:'user/login',
+            headers: {'__RequestVerificationToken' : token},
+            data: login
+      }).then(function(response) {
+        const setCookie = response.headers['set-cookie']
+        // Cookie get replaced after successful authentication
+        if (setCookie) {
+          cookie = setCookie
+        }
+
+        http.get('device/signal').then( console.log )
+      })
     })
-
-  Base64.encode(sha256('loofun0'))
-
 
   // Listen for window being closed
   mainWindow.on('closed',  () => {
