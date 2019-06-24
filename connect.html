@@ -28,7 +28,12 @@
     </form>
   </body>
   <script>
-      const ipcRenderer = require('electron').ipcRenderer
+      const { remote, ipcRenderer } = require('electron')
+
+      const configuration = remote.getCurrentWindow().configuration
+      document.getElementById("url").value = configuration.url
+      document.getElementById("login").value = configuration.login
+      document.getElementById("password").value = configuration.password
 
       document.getElementById('connection-details')
       .addEventListener('submit', event => {

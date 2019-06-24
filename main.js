@@ -88,6 +88,8 @@ function configure() {
     modal: true,
   })
 
+  connectWindow.configuration = configuration
+
   connectWindow.loadFile('connect.html')
   mainWindow.show()
 
