@@ -1,0 +1,31 @@
+100002 - non supporté par le firmware ou adresse API incorrecte
+100003 - pas de permission
+100004 - système occupé
+100005 - ? (manque d'informations sur l'erreur)
+100006 - mauvais paramètre
+100009 - erreur d'écriture
+103002 - ? (manque d'informations sur l'erreur)
+103015 - ? (manque d'informations sur l'erreur)
+108001 - nom d'utilisateur non valide
+108002 - mot de passe utilisateur incorrect
+108003 - utilisateur actuellement connecté
+108006 - nom d' utilisateur ou mot de passe incorrect
+108007 - nom d'utilisateur incorrect ou limite de tentatives de présentation de mot de passe atteinte
+110024 - batterie inférieure à 50% (pour les mises à jour logicielles)
+111019 - pas de réponse du réseau
+111020 - dépassement du délai d'attente réseau
+111022 - le réseau ne supporte pas
+113018 - système occupé (s'applique aux opérations SMS)
+114001 - le fichier existe déjà
+114002 - le fichier existe déjà
+114003 - la carte SD est actuellement en cours d'utilisation
+114004 - le chemin partagé n'existe pas
+114005 - chemin trop long
+114006 - aucune autorisation sur le fichier / répertoire
+115001 - ? (manque d'informations sur l'erreur)
+117001 - mot de passe incorrect (avec connexion WiFi)
+117004 - mot de passe incorrect WISPr (avec connexion WiFi)
+120001 - appel vocal occupé
+125001 - jeton incorrect
+125002 - Session obsolète
+125003 - pas de jeton de session

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+    <title>Connection details</title>
+  </head>
+  <body>
+    <form action="#" id="connection-details">
+      <table>         
+        <tr>
+            <td><label for="url">Huawei router address</label></td>
+            <td><input id="url" type="text"></td>
+        </tr>
+        <tr>
+            <td><label for="login">Login</label></td>
+            <td><input id="login" type="text"></td>    
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td><input id="password" type="password"></td>
+        </tr>
+        <tr>
+            </td>
+            <td><input type="submit" value="Ok"></td>
+        </tr>
+      </table>  
+    </form>
+  </body>
+  <script>
+      const ipcRenderer = require('electron').ipcRenderer
+
+      document.getElementById('connection-details')
+      .addEventListener('submit', event => {
+          event.preventDefault();
+          const url = document.getElementById("url").value;
+          const login = document.getElementById("login").value;
+          const password = document.getElementById("password").value;
+          ipcRenderer.send('connection-details', {
+              url: url,
+              login: login,
+              password: password
+          })
+      })
+  </script>
+</html>

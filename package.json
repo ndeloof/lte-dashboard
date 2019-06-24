@@ -7,7 +7,7 @@
     "start": "electron .",
     "watch": "nodemon --exec 'electron .'"
   },
-  "devDependencies": {
+  "dependencies": {
     "electron": "^5.0.0",
     "nodemon": "^1.18.9",
     "axios": "0.19.0",
@@ -15,5 +15,5 @@
     "js-sha256": "0.9.0",
     "js-base64": "2.5.1"
   },
-  "dependencies": {}
+  "devDependencies": {}
 }
