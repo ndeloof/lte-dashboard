@@ -1,5 +1,6 @@
 // Modules
-const {app, BrowserWindow, session, Tray, ipcMain} = require('electron')
+const {app, ipcMain} = require('electron')
+const mainWindow = require('./mainWindow')
 
 const sha256 = require('js-sha256').sha256
 const Base64 = require('js-base64').Base64
@@ -9,7 +10,7 @@ const fs = require('fs')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow, connectWindow, tray
+let connectWindow
 
 let cookie
 
@@ -33,42 +34,6 @@ const http = axios.create({
 })
 
 
-function createTray() {
-  tray = new Tray('trayTemplate@2x.png')
-  tray.setToolTip('LTE dashboard')
-  tray.on('click', e => {
-    mainWindow.show()
-  })
-}
-
-
-// Create a new BrowserWindow when `app` is ready
-function createWindow () {
-
-  createTray()
-
-  mainWindow = new BrowserWindow({
-    width: 1000, height: 800,
-    webPreferences: { nodeIntegration: true }
-  })
-
-  // Load index.html into the new BrowserWindow
-  mainWindow.loadFile('index.html')
-
-  loadConfiguration()
-
-  collectMetrics()
-
-
-  // Listen for window being closed
-  mainWindow.on('closed',  () => {
-    mainWindow = null
-    if (scheduled) {
-      clearTimeout(scheduled)
-    }
-  })
-}
-
 // Load persisted router configuration
 function loadConfiguration() {
   const cfg = app.getPath('appData')+'/lte-dashboard/config.json'
@@ -91,9 +56,9 @@ function configure() {
   connectWindow.configuration = configuration
 
   connectWindow.loadFile('connect.html')
-  mainWindow.show()
+  mainWindow.window.show()
 
-  ipcMain.on('connection-details', (event, data) => {
+  ipcMain.once('connection-details', (event, data) => {
     configuration = data
     const cfg = app.getPath('appData')+'/lte-dashboard/config.json'
     fs.writeFileSync(cfg, JSON.stringify(configuration))
@@ -109,7 +74,7 @@ function collectMetrics() {
     const xml = response.data
     var data = parser.parse(xml)
     console.log(data)
-    mainWindow.webContents.send('net-mode', data.response)
+    mainWindow.window.webContents.send('net-mode', data.response)
   })
   http.get(configuration.url+'/api/device/signal').then( (response) => {
     const xml = response.data
@@ -119,7 +84,13 @@ function collectMetrics() {
       login()
     } else {
       console.log(data)
-      mainWindow.webContents.send('metrics', data.response)
+      mainWindow.window.webContents.send('metrics', {
+        rsrq : parseInt(data.response.rsrq),
+        rsrp : parseInt(data.response.rsrp),
+        rssi : parseInt(data.response.rssi),
+        sinr : parseInt(data.response.sinr),
+        earfcn : data.response.earfcn
+      })
       // re-schedule
       scheduled = setTimeout(collectMetrics, 3000)
     }
@@ -173,15 +144,18 @@ function login() {
 }
 
 // Electron `app` is ready
-app.on('ready', createWindow)
+app.once('ready', () => {
+  mainWindow.createWindow()
+  loadConfiguration()
+  collectMetrics()
+})
 
 // Quit when all windows are closed - (Not macOS - Darwin)
 app.on('window-all-closed', () => {
   tray.destroy()
+  if (scheduled) {
+    cancelTimeout(scheduled)
+  }
   if (process.platform !== 'darwin') app.quit()  
 })
 
-// When app icon is clicked and app is running, (macOS) recreate the BrowserWindow
-app.on('activate', () => {
-  if (mainWindow === null) createWindow()
-})
