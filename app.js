@@ -5,8 +5,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Metrics from './Metrics'
+const { ipcRenderer } = require('electron')
 
+const metrics = ReactDOM.render(<Metrics/>, document.getElementById('metrics'))
 
-const metrics = <Metrics/>
+ipcRenderer.on('metrics', (event, data) => {
+  metrics.updateMetrics(data)
+})
 
-ReactDOM.render(metrics, document.getElementById('metrics'))
+ipcRenderer.on('net-mode', (event, data) => {
+  metrics.updateNework(data)
+})

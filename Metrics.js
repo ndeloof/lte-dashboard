@@ -29,32 +29,27 @@ class Metrics extends Component {
         earfcn: ''
     }
 
-    constructor(props) {
-        super(props);
-
-        ipcRenderer.on('metrics', (event, data) => {
-            this.setState( {
-                rsrq: data.rsrq + ' dB',
-                rsrp: data.rsrq + ' dBm',
-                rssi: data.rssi + ' dBm',
-                sinr: data.sinr + ' dB',
-                earfcn: data.earfcn,
-                rsrqColor: color(data.rsrq, -10, -15, -20),
-                rsrpColor: color(data.rsrp, -80, -90, -100),
-                rssiColor: color(data.rssi, -80, -90, -100),
-                sinrColor: color(data.sinr, 20, 13, 0),
-            })
-        })
-
-        ipcRenderer.on('net-mode', (event, data) => {
-            this.setState( {
-                networkMode: data.NetworkMode, 
-                networkBand: data.NetworkBand,
-                band: data.LTEBand
-            })
+    updateMetrics(data) {
+        this.setState( {
+            rsrq: data.rsrq + ' dB',
+            rsrp: data.rsrq + ' dBm',
+            rssi: data.rssi + ' dBm',
+            sinr: data.sinr + ' dB',
+            earfcn: data.earfcn,
+            rsrqColor: color(data.rsrq, -10, -15, -20),
+            rsrpColor: color(data.rsrp, -80, -90, -100),
+            rssiColor: color(data.rssi, -80, -90, -100),
+            sinrColor: color(data.sinr, 20, 13, 0),
         })
     }
 
+    updateNework(data) {
+        this.setState( {
+            networkMode: data.NetworkMode, 
+            networkBand: data.NetworkBand,
+            band: data.LTEBand
+        })
+    }
 
     render() {
         return (
